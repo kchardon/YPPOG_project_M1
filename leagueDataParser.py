@@ -1,14 +1,21 @@
 import pandas as pd
 
-def parseLeagueData(data : dict, puuid):
+def parseLeagueData(data : dict, puuid : str):
     data = data['info']
     participants = data['participants']
     data.pop('participants', None)
     data.pop('teams', None)
+    data.pop("gameCreation", None)
+    data.pop("gameEndTimestamp", None)
+    data.pop("gameId", None)
+    data.pop("gameName", None)
+    data.pop("gameVersion",None)
+    data.pop("mapId",None)
 
     for p in participants:
         if p['puuid'] == puuid:
             participants = p
+            break
     
     challenges = participants['challenges']
     perks = participants['perks']
@@ -56,6 +63,24 @@ def parseLeagueData(data : dict, puuid):
     data['secondaryVar11'] = secondarySelections[1]['var1']
     data['secondaryVar21'] = secondarySelections[1]['var2']
     data['secondaryVar31'] = secondarySelections[1]['var3']
+
+    data.pop("platformId",None)
+    data.pop("queueId",None)
+    data.pop("tournamentCode",None)
+    data.pop("champExperience",None)
+    data.pop("champLevel",None)
+    data.pop("championName",None)
+    data.pop("eligibleForProgression",None)
+    data.pop("individualPosition",None)
+    data.pop("participantId",None)
+    data.pop("profileIcon",None)
+    data.pop("riotIdName",None)
+    data.pop("riotIdTagline",None)
+    data.pop("summonerId",None)
+    data.pop("summonerName",None)
+    data.pop("teamId",None)
+    data.pop("timePlayed",None)
+    data.pop("gameType",None)
 
     return data
 
