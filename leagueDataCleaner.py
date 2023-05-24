@@ -22,7 +22,8 @@ def cleanLeagueData(data : pd.DataFrame):
     data.apply(lambda x : getHourCat(data, x.name), axis = 1)
     data = data.drop(['gameStartTimestamp', 'startHour'], axis=1)
 
-    newCol = {'dayMostFreq':0,
+    newCol = {'puuid':0,
+                'dayMostFreq':0,
                 'hourMostFreq':0,
                 'monday':0,
                 'tuesday':0,
@@ -64,9 +65,14 @@ def cleanLeagueData(data : pd.DataFrame):
                 'saturdayNight':0,
                 'sundayNight':0,
                 'championPref':None,
-                'championCount':0}
+                'championCount':0,
+                'badLane':0,
+                'favPos':0,
+                'nbPos':0}
     
-    colMode = ["gameMode", "role"]
+    newCol['puuid'] = data.loc[0,'puuid']
+
+    colMode = ["gameMode", "role", 'primaryStyle', 'secondaryStyle', 'primaryPerk0', 'primaryPerk1', 'primaryPerk2', 'primaryPerk3', 'secondaryPerk0', 'secondaryPerk1', 'item0', 'item1', 'item2', 'item3', 'item4', 'item5', 'item6', 'summoner1Id', 'summoner2Id', 'mythicItemUsed']
     colMax = ["summonerLevel"]
 
     newCol['championPref'] = data.loc[:,'championId'].mode().values.flatten()[0]
@@ -166,7 +172,17 @@ def cleanLeagueData(data : pd.DataFrame):
             if i[1] == 6:
                 newCol["sundayNight"] = j / nrow
     
-    data = data.drop(['startHourCat', 'weekDay', 'championId'], axis=1)
+    newCol['badLane'] = len(data[(data['lane'] != 'NONE') & (data['lane'] != '') & (data['teamPosition'] != 'NONE') & (data['teamPosition'] != '') & (data['lane'] != data['teamPosition'])].loc[:,['lane', 'teamPosition']].value_counts()) / nrow
+    newCol['favPos'] = data['teamPosition'].mode().values.flatten()[0]
+    newCol['nbPos'] = len(data['teamPosition'].unique())
+    
+    data = data.drop(['startHourCat', 'weekDay', 'championId', 'lane', 'teamPosition', 'puuid'], axis=1)
 
 
-    return data, newCol
+    new_col_data = pd.DataFrame.from_dict({0 : newCol}, orient='index')
+    mode_data = data[colMode].mode()
+    max_data = pd.DataFrame(data[colMax].max()).transpose()
+    colMax.extend(colMode)
+    mean_data = pd.DataFrame(data.drop(columns = colMax).mean()).transpose()
+
+    return pd.concat([new_col_data,mode_data, max_data, mean_data], axis = 1)
