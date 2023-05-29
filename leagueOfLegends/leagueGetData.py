@@ -27,7 +27,7 @@ def getLeagueDataOne(pseudo : str, region : str):
 
     if os.path.exists(os.path.join(parsedDataFolder, file_name_parsed)):
         # If it exists, we get it and return it
-        matchData = pd.read_csv(os.path.join(parsedDataFolder, file_name_parsed))
+        matchData = pd.read_csv(os.path.join(parsedDataFolder, file_name_parsed), index_col=0)
 
         print("Got parsed data from os for " + pseudo)
     
@@ -72,7 +72,6 @@ def getLeagueDataOne(pseudo : str, region : str):
             
             # If the match is not a Classic or Aram game or has been played before the 10th of February 2022 : deleted
             if (p['info']['gameMode'] != 'CLASSIC' and p['info']['gameMode'] != 'ARAM') or (p['info']['gameStartTimestamp'] <= 1644533999000) :
-                print("deleted")
                 deleted += 1
             
             # Else we parse the data and keep it
