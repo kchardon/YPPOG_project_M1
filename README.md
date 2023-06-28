@@ -21,3 +21,18 @@ There are two main functions :
 * **getLeagueData(targets : pd.DataFrame)** : The function is available in *leagueGetDataMultiplePlayers.py* and is used to collect and clean game data. The data passed to the function is a pandas dataframe containing the target data (from the previous function). It returns a dataframe with the feature data.
 
 Some examples are available in each game folder in *getDataLeague.ipynb*.
+
+## Requirements
+
+To use the functions, some libraries are needed. They are listed in *requirements.txt*.
+You can install all of them by running
+```
+pip install -r requirements.txt
+```
+while being in the folder.
+
+## Future work
+
+When the website with the form will be finished, we could update the target cleaner function to adapt it to the new form.
+
+When we will have enough data, we have to study the correlations between private data and game data, and attempt to set up a predictive model.
