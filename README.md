@@ -19,3 +19,5 @@ For the cleaning and the collection of the game data, some python scripts have b
 There are two main functions :
 * **cleanLeagueTarget(data : pd.DataFrame)** :  The function is available in *leagueTargetCleaner.py* and is used to clean the data collected in a form from various participants. The data passed to the function is a pandas dataframe containing data collected from the form. It returns a dataframe with the target variables and the game name.
 * **getLeagueData(targets : pd.DataFrame)** : The function is available in *leagueGetDataMultiplePlayers.py* and is used to collect and clean game data. The data passed to the function is a pandas dataframe containing the target data (from the previous function). It returns a dataframe with the feature data.
+
+Some examples are available in each game folder in *getDataLeague.ipynb*.
