@@ -33,6 +33,8 @@ while being in the folder.
 
 ## Future work
 
+We have to implement the functions for the games other than League of Legends.
+
 When the website with the form will be finished, we could update the target cleaner function to adapt it to the new form.
 
 When we will have enough data, we have to study the correlations between private data and game data, and attempt to set up a predictive model.
