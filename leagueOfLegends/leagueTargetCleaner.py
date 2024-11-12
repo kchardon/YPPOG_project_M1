@@ -7,10 +7,11 @@ def cleanLeagueTarget(data : pd.DataFrame):
     # Clean data from forms
 
     # Targets data
-    targets = pd.DataFrame(columns=['pseudo', 'region', 'age', 'sex', 'department', 'job', 'relationship', 'live_with_others', 'buy_content', 'economic', 'love_team_work',  'play_instrument', 'sport'])
+    targets = pd.DataFrame(columns=['pseudo', 'tagline', 'region', 'age', 'sex', 'department', 'job', 'relationship', 'live_with_others', 'buy_content', 'economic', 'love_team_work',  'play_instrument', 'sport'])
 
     targets['pseudo'] = data['Pseudo']
-    targets['region'] = data['Région / TagLine']
+    targets['tagline'] = data['Tagline']
+    targets['region'] = data['Région']
     targets['age'] = np.floor((pd.to_datetime(pd.Timestamp.now()) - pd.to_datetime(data['Date de naissance'], format = "%d/%m/%Y")).dt.days / 365.25)
     targets['sex'] =  np.where(data['Sexe'] == 'Femme', 0, np.where(data['Sexe'] == 'Homme', 1, 2 ) )
     targets['department'] = data['Département de résidence (numéro) actuel']

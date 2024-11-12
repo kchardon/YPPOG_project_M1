@@ -1,4 +1,4 @@
-from riotwatcher import LolWatcher, ApiError
+from riotwatcher import LolWatcher, RiotWatcher, ApiError
 from riot_api import key
 
 from leagueDataParser import parseLeagueData
@@ -12,13 +12,14 @@ matchFolder = os.path.join(dataFolder,"matchLists")
 parsedDataFolder = os.path.join(dataFolder, "parsedData")
 
 
-def getLeagueDataOne(pseudo : str, region : str):
+def getLeagueDataOne(pseudo : str, tag_line : str, region : str):
 
     # API connection
     lol = LolWatcher(key)
+    riot = RiotWatcher(key)
     
     # Get the data of the player
-    player = lol.summoner.by_name(region,pseudo)
+    player = riot.account.by_riot_id(region, pseudo, tag_line)
     puuid = player['puuid']
 
     # Look if the parsed data is already saved

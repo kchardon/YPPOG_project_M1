@@ -11,7 +11,7 @@ def getLeagueData(targets : pd.DataFrame):
     for i in range(targets.shape[0]) :
         
         # Get the features
-        data = getLeagueDataOne(targets.loc[i, 'pseudo'], targets.loc[i, 'region'])
+        data = getLeagueDataOne(targets.loc[i, 'pseudo'], targets.loc[i, 'tagline'], targets.loc[i, 'region'])
 
         # Add it to the final dataFrame
         if i == 0:
