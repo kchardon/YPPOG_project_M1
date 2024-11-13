@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 
-def cleanLeagueTarget(data : pd.DataFrame):
+def cleanTarget(data : pd.DataFrame):
 
     # Clean data from forms
 

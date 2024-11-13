@@ -3,7 +3,7 @@ from leagueGetData import getLeagueDataOne
 import pandas as pd
 
 
-def getLeagueData(targets : pd.DataFrame):
+def getData(targets : pd.DataFrame):
 
     finalData = None
     
