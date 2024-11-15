@@ -52,6 +52,33 @@ Other demographic characteristics might also be inferred from gaming behavior:
 - **Region of residence**: Could potentially be inferred based on regional vacation times.
 - **Employment status**: Those unemployed may play more often during daytime hours.
 
+## Preliminary results
+
+While awaiting the collection of project-specific data, I utilized a publicly available dataset [1] to perform initial experiments and test predictive models.
+
+### Dataset Overview
+
+The dataset contains demographic and game-related attributes for each player, including:
+
+- PlayerID: Unique identifier for each player.
+- Age: Age of the player.
+- Gender: Gender of the player.
+- Location: Geographic location of the player.
+- GameGenre: Genre of the game the player is engaged in.
+- PlayTimeHours: Average hours spent playing per session.
+- InGamePurchases: Indicates whether the player makes in-game purchases (0 = No, 1 = Yes).
+- GameDifficulty: Difficulty level of the game.
+- SessionsPerWeek: Number of gaming sessions per week.
+- AvgSessionDurationMinutes: Average duration of each gaming session in minutes.
+- PlayerLevel: Current level of the player in the game.
+- AchievementsUnlocked: Number of achievements unlocked by the player.
+- EngagementLevel: Categorized engagement level reflecting player retention ('High', 'Medium', 'Low').
+
+### Approach
+
+Although the dataset was designed to predict player engagement levels using both demographic and game data, I repurposed it to investigate whether demographic attributes (such as age, gender, and location) could be predicted based solely on game-related features.
+
+This approach allowed me to conduct exploratory analysis and test preliminary models to assess the feasibility of demographic inference from gaming behavior.
 
 ## Requirements
 
@@ -73,3 +100,7 @@ Several key areas remain for further development:
 - Collaborating with experts in each game to identify relevant in-game data that could contribute to privacy-related predictions.
 - Collect data.
 - Extending data collection functions to games beyond League of Legends.
+
+## References
+
+[1] Rabie El Kharoua. (2024). 🎮 Predict Online Gaming Behavior Dataset [Data set]. Kaggle. https://doi.org/10.34740/KAGGLE/DSV/8742674
