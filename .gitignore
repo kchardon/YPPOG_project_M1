@@ -1,5 +1,6 @@
 leagueOfLegends/data/
 leagueOfLegends/__pycache__/
+preliminary_results/data/
 riot_api.py
 fortnite_api.py
 cod_key.py
