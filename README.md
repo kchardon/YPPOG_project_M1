@@ -5,8 +5,9 @@ This research project was initiated during my Master 1 in Data & AI at the [Inst
 
 ## Project Overview
 
-The **YPPOG project** explores whether private data (e.g., age, gender, and region of residence) can be inferred from game data, with a primary focus on determining if a player is a minor. This research is critical for enhancing youth privacy protection in online gaming environments.
+The **YPPOG project** investigates whether private information—such as age, gender, and region of residence—can be inferred from game data. A key focus is on determining whether a player is a minor, addressing critical concerns about youth privacy protection in online gaming environments.
 
+Prior research has shown that attackers can exploit publicly available game data to infer sensitive information about players. For instance, in the game Dota 2, studies have demonstrated how public in-game data can be leveraged to deduce private demographic attributes [1]. This highlights the pressing need to understand and mitigate privacy risks in gaming ecosystems.
 
 ## Data
 
@@ -54,7 +55,7 @@ Other demographic characteristics might also be inferred from gaming behavior:
 
 ## Preliminary results
 
-While awaiting the collection of project-specific data, I utilized a publicly available dataset [1] to perform initial experiments and test predictive models.
+While awaiting the collection of project-specific data, I utilized a publicly available dataset [2] to perform initial experiments and test predictive models.
 
 ### Dataset Overview
 
@@ -66,13 +67,13 @@ The dataset contains demographic and game-related attributes for each player, in
 - Location: Geographic location of the player.
 - GameGenre: Genre of the game the player is engaged in.
 - PlayTimeHours: Average hours spent playing per session.
-- InGamePurchases: Indicates whether the player makes in-game purchases (0 = No, 1 = Yes).
+- InGamePurchases: Indicates whether the player makes in-game purchases.
 - GameDifficulty: Difficulty level of the game.
 - SessionsPerWeek: Number of gaming sessions per week.
 - AvgSessionDurationMinutes: Average duration of each gaming session in minutes.
 - PlayerLevel: Current level of the player in the game.
 - AchievementsUnlocked: Number of achievements unlocked by the player.
-- EngagementLevel: Categorized engagement level reflecting player retention ('High', 'Medium', 'Low').
+- EngagementLevel: Categorized engagement level reflecting player retention.
 
 ### Approach
 
@@ -103,4 +104,6 @@ Several key areas remain for further development:
 
 ## References
 
-[1] Rabie El Kharoua. (2024). 🎮 Predict Online Gaming Behavior Dataset [Data set]. Kaggle. https://doi.org/10.34740/KAGGLE/DSV/8742674
+[1] Tricomi, P. P., Facciolo, L., Apruzzese, G., & Conti, M. (2022). Attribute Inference Attacks in Online Multiplayer Video Games: a Case Study on Dota2. arXiv. https://doi.org/10.48550/ARXIV.2210.09028
+
+[2] Rabie El Kharoua. (2024). 🎮 Predict Online Gaming Behavior Dataset [Data set]. Kaggle. https://doi.org/10.34740/KAGGLE/DSV/8742674
