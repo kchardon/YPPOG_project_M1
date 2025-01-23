@@ -29,9 +29,9 @@ The main functions are:
 
 * **cleanTarget(data : pd.DataFrame)** :  Available in *targetCleaner.py*, this function cleans demographic data collected from participants. It takes a pandas DataFrame as input and outputs a cleaned DataFrame with target variables and game identifiers.
 
-* **getData(targets : pd.DataFrame)** : Located in *getDataMultiplePlayers.py*, this function collects and cleans in-game data for each participant. It takes a DataFrame of target data and returns a DataFrame with game feature data.
+* **getData(targets : pd.DataFrame)** : Located in *getData.py*, this function collects and cleans in-game data for each participant. It takes a DataFrame of target data and returns a DataFrame with game feature data.
 
-Example usage of these functions is provided in *getData.ipynb* within each game folder. Currently, we are collecting data from all matches played since 2022.
+Example usage of these functions is provided in *testData.ipynb* within each game folder. Currently, we are collecting data from all matches played since 2023.
 
 
 ## Prediction Approaches
