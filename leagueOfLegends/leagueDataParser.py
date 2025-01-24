@@ -78,40 +78,26 @@ def parseLeagueData(data : dict, puuid : str):
     data['secondaryVar21'] = secondarySelections[1]['var2']
     data['secondaryVar31'] = secondarySelections[1]['var3']
 
-    data.pop('teams', None)
-    data.pop("gameCreation", None)
-    data.pop("gameEndTimestamp", None)
-    data.pop("gameId", None)
-    data.pop("gameName", None)
-    data.pop("gameVersion",None)
-    data.pop("mapId",None)
-    data.pop('missions', None)
-    data.pop('endOfGameResult', None)
-    data.pop("platformId",None)
-    data.pop("queueId",None)
-    data.pop("tournamentCode",None)
-    data.pop("championName",None)
-    data.pop("individualPosition",None)
-    data.pop("participantId",None)
-    data.pop("profileIcon",None)
-    data.pop("riotIdGameName",None)
-    data.pop("riotIdTagline",None)
-    data.pop("summonerId",None)
-    data.pop("summonerName",None)
-    data.pop("teamId",None)
-    data.pop("timePlayed",None)
-    data.pop("gameType",None)
-    data.pop("gameDuration",None)
-    data.pop("championTransform",None)
-    data.pop("playerAugment1",None)
-    data.pop("playerAugment2",None)
-    data.pop("playerAugment3",None)
-    data.pop("playerAugment4",None)
-    data.pop("playerSubteamId",None)
-    data.pop("subteamPlacement",None)
-    data.pop("visionClearedPings",None)
-    data.pop("mythicItemUsed",None)
-    data.pop("legendaryItemUsed",None)
+    # List of columns to remove
+    columns_to_remove = [
+    'teams', 'gameCreation', 'gameEndTimestamp', 'gameId', 'gameName', 'gameVersion', 
+    'mapId', 'missions', 'endOfGameResult', 'platformId', 'queueId', 'tournamentCode', 
+    'championName', 'individualPosition', 'participantId', 'profileIcon', 'riotIdGameName', 
+    'riotIdTagline', 'summonerId', 'summonerName', 'teamId', 'timePlayed', 'gameType', 
+    'gameDuration', 'championTransform', 'playerAugment1', 'playerAugment2', 'playerAugment3', 
+    'playerAugment4', 'playerSubteamId', 'subteamPlacement', 'visionClearedPings', 'mythicItemUsed', 
+    'legendaryItemUsed', 'PlayerScore0', 'PlayerScore1', 'PlayerScore10', 'PlayerScore11', 
+    'PlayerScore2', 'PlayerScore3', 'PlayerScore4', 'PlayerScore5', 'PlayerScore6', 
+    'PlayerScore7', 'PlayerScore8', 'PlayerScore9', 'playerAugment5', 'playerAugment6', 
+    'retreatPings', 'HealFromMapSources', 'InfernalScalePickup', 'SWARM_DefeatAatrox', 
+    'SWARM_DefeatBriar', 'SWARM_DefeatMiniBosses', 'SWARM_EvolveWeapon', 'SWARM_Have3Passives', 
+    'SWARM_KillEnemy', 'SWARM_PickupGold', 'SWARM_ReachLevel50', 'SWARM_Survive15Min', 
+    'SWARM_WinWith5EvolvedWeapons', 'fistBumpParticipation', 'voidMonsterKill'
+    ]
+
+    # Iterate through the list and pop the columns
+    for column in columns_to_remove:
+        data.pop(column, None)  
 
     return data
 

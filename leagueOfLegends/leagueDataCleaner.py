@@ -26,13 +26,23 @@ def cleanLeagueData(players : pd.DataFrame, path : str = None):
     if path is None:
         path = "data/parsedData"
     
-    finalData = players.copy()
+    cleaned_data_list = []
 
     # For each player
     for puuid, birth_date in zip(players['puuid'], players['birthDate']):
         data = pd.read_csv(os.path.join(path, puuid + ".csv"), index_col=0)
         cleanData = cleanLeagueDataOne(data, birth_date)
-        finalData = pd.merge(finalData, cleanData, on=['puuid'])
+        #finalData = pd.merge(finalData, cleanData, on=['puuid'], how='outer')
+        
+        # Add cleaned data to the list
+        cleaned_data_list.append(cleanData)
+
+    # Combine all cleaned data into a single dataframe
+    cleaned_data = pd.concat(cleaned_data_list, axis=0)
+
+    # Merge the players' personal information with the cleaned data
+    finalData = pd.merge(players, cleaned_data, on='puuid', how='outer')
+
     return finalData
 
 
@@ -150,7 +160,7 @@ def aggregateData(data : pd.DataFrame):
     newCol['puuid'] = data.loc[0,'puuid']
 
     # Data on which to apply the Mode function
-    colMode = ["gameMode", "role", "offense", "defense", "flex", 'primaryStyle', 'secondaryStyle', 'primaryPerk0', 'primaryPerk1', 'primaryPerk2', 'primaryPerk3', 'secondaryPerk0', 'secondaryPerk1', 'item0', 'item1', 'item2', 'item3', 'item4', 'item5', 'item6', 'summoner1Id', 'summoner2Id']
+    colMode = ['ageCategory', "gameMode", "role", "offense", "defense", "flex", 'primaryStyle', 'secondaryStyle', 'primaryPerk0', 'primaryPerk1', 'primaryPerk2', 'primaryPerk3', 'secondaryPerk0', 'secondaryPerk1', 'item0', 'item1', 'item2', 'item3', 'item4', 'item5', 'item6', 'summoner1Id', 'summoner2Id']
     # Data on which to apply the Max function
     colMax = ["summonerLevel"]
     # All other data will have the Mean function applied to it
