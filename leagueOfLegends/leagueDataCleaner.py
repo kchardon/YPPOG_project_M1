@@ -1,4 +1,6 @@
 import pandas as pd
+import numpy as np
+from sklearn.preprocessing import OneHotEncoder
 import os
 from datetime import datetime
 
@@ -32,7 +34,6 @@ def cleanLeagueData(players : pd.DataFrame, path : str = None):
     for puuid, birth_date in zip(players['puuid'], players['birthDate']):
         data = pd.read_csv(os.path.join(path, puuid + ".csv"), index_col=0)
         cleanData = cleanLeagueDataOne(data, birth_date)
-        #finalData = pd.merge(finalData, cleanData, on=['puuid'], how='outer')
         
         # Add cleaned data to the list
         cleaned_data_list.append(cleanData)
@@ -65,20 +66,15 @@ def getHourCat(data : pd.DataFrame, i : int):
     None
         The function modifies the DataFrame in place and does not return a value.
     """
+    conditions = [
+        (data['startHour'] >= 6) & (data['startHour'] < 12),  # Morning, 0
+        (data['startHour'] >= 12) & (data['startHour'] < 17),  # Afternoon, 1
+        (data['startHour'] >= 17) & (data['startHour'] < 21),  # Evening, 2
+        (data['startHour'] >= 21) | (data['startHour'] < 6)    # Night, 3
+    ]
+    categories = [0, 1, 2, 3]
 
-    h = data.loc[i,'startHour']
-    if h >= 6 and h < 12:
-        # Morning
-        data.loc[i,'startHourCat'] = 0
-    elif h >= 12 and h < 17:
-        # Afternoon
-        data.loc[i,'startHourCat'] = 1
-    elif h >= 17 and h < 21:
-        # Evening
-        data.loc[i,'startHourCat'] = 2
-    else :
-        # Night
-        data.loc[i,'startHourCat'] = 3
+    data['startHourCat'] = np.select(conditions, categories, default=np.nan)
 
 
 def aggregateData(data : pd.DataFrame):
@@ -100,182 +96,111 @@ def aggregateData(data : pd.DataFrame):
         A DataFrame containing aggregated statistics for the player.
     """
 
-    # Data to be computed
-    newCol = {'puuid':0,
-                # Day on which the player played the most
-                'dayMostFreq':0,
-                # Hour on which the player played the most
-                'hourMostFreq':0,
-                # Stats on game frequencies given day and time
-                'monday':0,
-                'tuesday':0,
-                'wednesday':0,
-                'thursday':0,
-                'friday':0,
-                'saturday':0,
-                'sunday':0,
-                'morning':0,
-                'afternoon':0,
-                'evening':0,
-                'night':0,
-                'mondayMorning':0,
-                'tuesdayMorning':0,
-                'wednesdayMorning':0,
-                'thursdayMorning':0,
-                'fridayMorning':0,
-                'saturdayMorning':0,
-                'sundayMorning':0,
-                'mondayAfternoon':0,
-                'tuesdayAfternoon':0,
-                'wednesdayAfternoon':0,
-                'thursdayAfternoon':0,
-                'fridayAfternoon':0,
-                'saturdayAfternoon':0,
-                'sundayAfternoon':0,
-                'mondayEvening':0,
-                'tuesdayEvening':0,
-                'wednesdayEvening':0,
-                'thursdayEvening':0,
-                'fridayEvening':0,
-                'saturdayEvening':0,
-                'sundayEvening':0,
-                'mondayNight':0,
-                'tuesdayNight':0,
-                'wednesdayNight':0,
-                'thursdayNight':0,
-                'fridayNight':0,
-                'saturdayNight':0,
-                'sundayNight':0,
-                # Stats on played champions (most used champion and number of different champions used)
-                'championPref':None,
-                'championCount':0,
-                # When the player plays on another lane than the one on which he/she has to play
-                'badLane':0,
-                # Most played position (lane)
-                'favPos':0,
-                # Number of different positions (lanes) played
-                'nbPos':0}
+    # New features to be computed
+    newCol = {}
     
+
     # Keep the id
     newCol['puuid'] = data.loc[0,'puuid']
 
-    # Data on which to apply the Mode function
-    colMode = ['ageCategory', "gameMode", "role", "offense", "defense", "flex", 'primaryStyle', 'secondaryStyle', 'primaryPerk0', 'primaryPerk1', 'primaryPerk2', 'primaryPerk3', 'secondaryPerk0', 'secondaryPerk1', 'item0', 'item1', 'item2', 'item3', 'item4', 'item5', 'item6', 'summoner1Id', 'summoner2Id']
-    # Data on which to apply the Max function
-    colMax = ["summonerLevel"]
-    # All other data will have the Mean function applied to it
 
+    # Stats on played champions (most used champion and number of different champions used)
     newCol['championPref'] = data.loc[:,'championId'].mode().values.flatten()[0]
     newCol['championCount'] = len(data.loc[:,"championId"].unique())
 
+
+    # Hour on which the player played the most
     newCol['hourMostFreq'] = data.loc[:,'startHourCat'].mode().values.flatten()[0]
+
+    # Day on which the player played the most
     newCol['dayMostFreq'] = data.loc[:,'weekDay'].mode().values.flatten()[0]
 
+
+    # Stats on game frequencies given day and time
     nrow = data.shape[0]
 
-    for i,j in data.loc[:,'weekDay'].value_counts().items():
-        if i == 0:
-            newCol['monday'] = j / nrow
-        if i == 1:
-            newCol['tuesday'] = j / nrow
-        if i == 2:
-            newCol['wednesday'] = j / nrow
-        if i == 3:
-            newCol['thursday'] = j / nrow
-        if i == 4:
-            newCol['friday'] = j / nrow
-        if i == 5:
-            newCol['saturday'] = j / nrow
-        if i == 6:
-            newCol['sunday'] = j / nrow
-    
+    # Days of the week and time categories
+    days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+    times = ["morning", "afternoon", "evening", "night"]
 
-    for i,j in data.loc[:,'startHourCat'].value_counts().items():
-        if i == 0:
-            newCol["morning"] = j / nrow
-        if i == 1:
-            newCol["afternoon"] = j / nrow
-        if i == 2:
-            newCol["evening"] = j / nrow
-        if i == 3:
-            newCol["night"] = j / nrow
-    
-    for i,j in data.loc[:,['startHourCat', 'weekDay']].value_counts().items():
-        if i[0] == 0:
-            if i[1] == 0:
-                newCol["mondayMorning"] = j / nrow
-            if i[1] == 1:
-                newCol["tuesdayMorning"] = j / nrow
-            if i[1] == 2:
-                newCol["wednesdayMorning"] = j / nrow
-            if i[1] == 3:
-                newCol["thursdayMorning"] = j / nrow
-            if i[1] == 4:
-                newCol["fridayMorning"] = j / nrow
-            if i[1] == 5:
-                newCol["saturdayMorning"] = j / nrow
-            if i[1] == 6:
-                newCol["sundayMorning"] = j / nrow
-        if i[0] == 1:
-            if i[1] == 0:
-                newCol["mondayAfternoon"] = j / nrow
-            if i[1] == 1:
-                newCol["tuesdayAfternoon"] = j / nrow
-            if i[1] == 2:
-                newCol["wednesdayAfternoon"] = j / nrow
-            if i[1] == 3:
-                newCol["thursdayAfternoon"] = j / nrow
-            if i[1] == 4:
-                newCol["fridayAfternoon"] = j / nrow
-            if i[1] == 5:
-                newCol["saturdayAfternoon"] = j / nrow
-            if i[1] == 6:
-                newCol["sundayAfternoon"] = j / nrow
-        if i[0] == 2:
-            if i[1] == 0:
-                newCol["mondayEvening"] = j / nrow
-            if i[1] == 1:
-                newCol["tuesdayEvening"] = j / nrow
-            if i[1] == 2:
-                newCol["wednesdayEvening"] = j / nrow
-            if i[1] == 3:
-                newCol["thursdayEvening"] = j / nrow
-            if i[1] == 4:
-                newCol["fridayEvening"] = j / nrow
-            if i[1] == 5:
-                newCol["saturdayEvening"] = j / nrow
-            if i[1] == 6:
-                newCol["sundayEvening"] = j / nrow
-        if i[0] == 3:
-            if i[1] == 0:
-                newCol["mondayNight"] = j / nrow
-            if i[1] == 1:
-                newCol["tuesdayNight"] = j / nrow
-            if i[1] == 2:
-                newCol["wednesdayNight"] = j / nrow
-            if i[1] == 3:
-                newCol["thursdayNight"] = j / nrow
-            if i[1] == 4:
-                newCol["fridayNight"] = j / nrow
-            if i[1] == 5:
-                newCol["saturdayNight"] = j / nrow
-            if i[1] == 6:
-                newCol["sundayNight"] = j / nrow
-    
+    # Initialize all day and time combinations to 0
+    newCol.update({day: 0 for day in days})
+    newCol.update({time: 0 for time in times})
+    newCol.update({f"{day}{time.capitalize()}": 0 for day in days for time in times})
+
+    # Calculate proportions for weekDay
+    for i, j in data['weekDay'].value_counts().items():
+        newCol[days[int(i)]] = j / nrow
+
+    # Calculate proportions for startHourCat
+    for i, j in data['startHourCat'].value_counts().items():
+        newCol[times[int(i)]] = j / nrow
+
+    # Calculate proportions for combinations of startHourCat and weekDay
+    for (time_cat, day), count in data[['startHourCat', 'weekDay']].value_counts().items():
+        newCol[f"{days[int(day)]}{times[int(time_cat)].capitalize()}"] = count / nrow
+
+
+    # When the player plays on another lane than the one on which he/she has to play
     newCol['badLane'] = len(data[(data['lane'] != 'NONE') & (data['lane'] != '') & (data['teamPosition'] != 'NONE') & (data['teamPosition'] != '') & (data['lane'] != data['teamPosition'])].loc[:,['lane', 'teamPosition']].value_counts()) / nrow
+
+
+    # Most played position (lane)
     newCol['favPos'] = data['teamPosition'].mode().values.flatten()[0]
+
+
+    # Number of different positions (lanes) played
     newCol['nbPos'] = len(data['teamPosition'].unique())
     
+
     # Drop the data on which we applied some modifications (that are stored in other columns)
     data = data.drop(['startHourCat', 'weekDay', 'championId', 'lane', 'teamPosition', 'puuid'], axis=1)
 
+
+    # Data on which to apply the Mode function
+    colMode = ['ageCategory', "gameMode", "role", "offense", "defense", "flex", 'primaryStyle', 'secondaryStyle', 'primaryPerk0', 'primaryPerk1', 'primaryPerk2', 'primaryPerk3', 'secondaryPerk0', 'secondaryPerk1', 'item0', 'item1', 'item2', 'item3', 'item4', 'item5', 'item6', 'summoner1Id', 'summoner2Id']
+    
+    # Data on which to apply the Max function
+    colMax = ["summonerLevel"]
+    
+    # All other data will have the Mean function applied to it
+
     new_col_data = pd.DataFrame.from_dict({0 : newCol}, orient='index')
-    mode_data = data[colMode].mode()
+    mode_data = data[colMode].mode().head(1) # To keep the first one if several values are tied (see how to deal with this)
     max_data = pd.DataFrame(data[colMax].max()).transpose()
     colMax.extend(colMode)
     mean_data = pd.DataFrame(data.drop(columns = colMax).mean()).transpose()
 
-    return pd.concat([new_col_data, mode_data, max_data, mean_data], axis = 1)
+
+    # Concat all features
+    finalData = pd.concat([new_col_data, mode_data, max_data, mean_data], axis = 1)
+
+
+    # I handle string features
+    # Possible categories
+    favPos_categories = ['UTILITY', 'MIDDLE', 'JUNGLE', 'BOTTOM', 'TOP', 'APEX', None]
+    role_categories = ['SUPPORT', 'SOLO', 'CARRY', 'NONE', 'DUO']
+    gameMode_categories = [
+        "CLASSIC", "ODIN", "ARAM", "TUTORIAL", "URF", "DOOMBOTSTEEMO", "ONEFORALL",
+        "ASCENSION", "FIRSTBLOOD", "KINGPORO", "SIEGE", "ASSASSINATE", "ARSR",
+        "DARKSTAR", "STARGUARDIAN", "PROJECT", "GAMEMODEX", "ODYSSEY", "NEXUSBLITZ",
+        "ULTBOOK"
+    ]
+
+    # Initialize the OneHotEncoder
+    encoder = OneHotEncoder(categories=[favPos_categories, role_categories, gameMode_categories], handle_unknown='ignore', sparse=False)
+
+    # Fit and transform the categorical data
+    encoded_array = encoder.fit_transform(finalData[['favPos', 'role', 'gameMode']])
+
+    # Create a DataFrame for the encoded columns
+    encoded_df = pd.DataFrame(encoded_array, columns=encoder.get_feature_names_out())
+
+    # Concatenate the original numerical columns with the encoded columns
+    finalData = pd.concat([finalData.drop(columns=['favPos', 'role', 'gameMode']), encoded_df], axis=1)
+
+
+    return finalData
 
 
 
@@ -326,8 +251,8 @@ def cleanLeagueDataOne(data : pd.DataFrame, birth_date: str):
     data = data.drop(['gameStartTimestamp', 'startHour', 'age'], axis=1)
 
     # Group data by age
-    data_under_18 = data[data['ageCategory'] == 'under_18']
-    data_over_18 = data[data['ageCategory'] == 'over_18']
+    data_under_18 = data[data['ageCategory'] == 'under_18'].reset_index(drop=True)
+    data_over_18 = data[data['ageCategory'] == 'over_18'].reset_index(drop=True)
 
     # Aggregate data for each group
     aggregated_under_18 = aggregateData(data_under_18) if not data_under_18.empty else pd.DataFrame()
