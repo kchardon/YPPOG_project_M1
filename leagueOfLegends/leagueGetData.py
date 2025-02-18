@@ -103,6 +103,39 @@ def getLeagueDataOne(pseudo : str, tag_line : str, region : str, dataFolder : st
         matchData = pd.read_csv(os.path.join(parsedDataFolder, file_name_parsed), index_col=0)
 
         print("Got parsed data from os for " + pseudo + "#" + tag_line)
+
+        # Verify whether it's up to date
+        new_matches = update_match_list(lol, region, puuid, matchFolder)
+
+        if new_matches:
+            print("Added new matches :", new_matches)
+            
+            deleted = 0
+            size = matchData.shape[0]
+            # For each match
+            for j,i in enumerate(new_matches):
+                # Get the data
+                try:
+                    p = lol.match.by_id(region, i)
+
+                    # If the match is not a Classic or Aram game or has been played before the 10th of February 2022 : deleted
+                    if (p['info']['gameMode'] != 'CLASSIC' and p['info']['gameMode'] != 'ARAM') or (p['info']['gameStartTimestamp'] <= 1644533999000) :
+                        deleted += 1
+                    
+                    # Else we parse the data and keep it
+                    else :
+                        p = parseLeagueData(p, puuid)
+                        matchData.loc[j + size - deleted,:] = p
+
+                except ApiError as err:
+                    print('Error', err.response.status_code, 'for match', i, 'for', pseudo + "#" + tag_line)
+            
+            # We save the dataFrame
+            matchData.to_csv(os.path.join(parsedDataFolder, file_name_parsed))
+
+
+        else :
+            print("List of matchs up to date.")
     
     else:
         # Else we retrieve it and save it
@@ -118,6 +151,14 @@ def getLeagueDataOne(pseudo : str, tag_line : str, region : str, dataFolder : st
                     matchs.extend(line.split(','))
             
             print("Got matchs list from os for " + pseudo + "#" + tag_line)
+
+            # Verify whether it's up to date
+            new_matches = update_match_list(lol, region, puuid, matchFolder)
+
+            if new_matches:
+                print("Added new matches :", new_matches)
+            else :
+                print("List of matchs up to date.")
 
         else :
             # Else we retrieve it and save it
@@ -165,3 +206,62 @@ def getLeagueDataOne(pseudo : str, tag_line : str, region : str, dataFolder : st
 
     # When the data is saved, we return the puuid
     return puuid
+
+
+def update_match_list(lol: LolWatcher, region: str, puuid: str, match_folder: str):
+    """
+    Checks if the saved match list is up to date with the API.
+    Updates the list if new matches are found and returns the new matches.
+
+    New matches are placed at the beginning of the list, preserving order.
+
+    Parameters
+    ----------
+    lol : LolWatcher
+        LolWatcher instance for API requests.
+        
+    region : str
+        Region code.
+        
+    puuid : str
+        Player unique identifier.
+    
+    match_folder : str
+        Path to the folder storing match lists.
+
+    Returns
+    -------
+    list
+        List of new match IDs.
+    """
+    file_path = os.path.join(match_folder, puuid + ".txt")
+    saved_matches = []
+
+    # Get stored matchs list
+    if os.path.exists(file_path):
+        with open(file_path, 'r') as f:
+            saved_matches = f.read().split(',')
+
+    all_new_matches = []
+    start = 0
+
+    while True:
+        new_matches = lol.match.matchlist_by_puuid(region, puuid, count=100, start=start)
+        if not new_matches:
+            break
+        
+        # Identify new matches not in saved list
+        unique_new = [m for m in new_matches if m not in saved_matches]
+        if not unique_new:
+            break
+
+        all_new_matches.extend(unique_new)
+        start += 100
+
+    if all_new_matches:
+        all_matches = all_new_matches + saved_matches # New matches first
+        with open(file_path, 'w') as f:
+            f.write(','.join(all_matches))
+        return all_new_matches
+
+    return []
