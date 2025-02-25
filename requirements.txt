@@ -1,5 +1,8 @@
-pandas
-riotwatcher
+pandas==1.4.3
+numpy==1.24.2
+scikit-learn==1.1.1
+riotwatcher==3.2.2
 cod_api
 fortnite_api
 apex_legends_api
+ipykernel
